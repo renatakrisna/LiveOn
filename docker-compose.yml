@@ -1,0 +1,47 @@
+version: "3.1"
+services:
+  react-app:
+    image: react-app
+    stdin_open: true
+    ports:
+      - "3000:3000"
+  api-server:
+    image: api-server
+    ports:
+      - "5000:5000"
+    networks:
+      - eventhub-app
+    links: 
+      - redis
+      - postgres
+    depends_on:
+      - redis
+      - postgres
+  redis:
+    image: redis:6
+    restart: always
+    networks:
+      - eventhub-app
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+  postgres:
+    image: postgres:latest
+    container_name: my-postgres-container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ozl6330
+      POSTGRES_DB: eventHub
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+networks:
+  eventhub-app:
+    driver: bridge
+volumes:
+  redis-data:
+    driver: local
+  postgres_data:
+    driver: local
